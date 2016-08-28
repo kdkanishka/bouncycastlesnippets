@@ -44,9 +44,13 @@ public class Main {
 //        X509Certificate cert = LoadCertificate.loadX509Certificate("/home/kanishka/Desktop/testkeys/certificate.cer");
 //        System.out.println(cert);
 
-        String envelopedData = CMSSign.sign("/home/kanishka/Desktop/testkeys/doc_to_sign","");
-        CMSSign.verify(envelopedData);
+        //snipper 3 (sign and verify)
+//        String envelopedData = CMSSign.sign("/home/kanishka/Desktop/testkeys/doc_to_sign","");
+//        CMSSign.verify(envelopedData);
 
+        //snippet 4 (encrypt/decrypt)
+        byte[] encrypted = Encrypt.encrypt("/home/kanishka/Desktop/testkeys/doc_to_sign");
+        Encrypt.decrypt(encrypted);
 
     }
 }

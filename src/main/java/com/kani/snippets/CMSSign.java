@@ -48,7 +48,7 @@ import java.util.List;
 /**
  * Created by kanishka on 8/28/16.
  */
-public class CMSSign {
+public class CMSSign extends CertCommons {
     public static String sign(String inputFile, String signedFile) throws IOException, InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchProviderException, KeyStoreException, UnrecoverableKeyException, CMSException, InvalidKeyException, SignatureException, CertificateEncodingException, OperatorCreationException {
         String KEYSTORE_ALIAS = "imago";
         byte[] inputFileBytes = FileUtils.readFileToByteArray(new File(inputFile));
@@ -82,7 +82,7 @@ public class CMSSign {
         System.out.println("Signed content: " + signedContent + "\n");
 
         String envelopedData = encoder.encode(sigData.getEncoded());
-        System.out.println("Enveloped data: " + envelopedData);
+        System.out.println("Signed Enveloped data: " + envelopedData);
 
         return envelopedData;
     }
@@ -107,22 +107,4 @@ public class CMSSign {
         }
     }
 
-    private static Certificate getCertificate(String alias) throws KeyStoreException {
-        KeyStore ks = getKeyStore();
-        Certificate cert = ks.getCertificate(alias);
-        return cert;
-    }
-
-    private static PrivateKey getPrivateKey(String alias) throws UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException {
-        String password = "Wiiagdfsa";
-        KeyStore ks = getKeyStore();
-        PrivateKey privKey = (PrivateKey) ks.getKey(alias, password.toCharArray());
-        return privKey;
-    }
-
-    private static KeyStore getKeyStore() {
-        String password = "Wiiagdfsa";
-        KeyStore ks = KeystoreLoader.load("/home/kanishka/Desktop/testkeys/certs.p12", password);
-        return ks;
-    }
 }
