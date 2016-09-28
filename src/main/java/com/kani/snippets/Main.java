@@ -1,8 +1,16 @@
 package com.kani.snippets;
 
+import com.sun.mail.iap.ByteArray;
 import org.bouncycastle.cms.CMSException;
+import org.bouncycastle.mail.smime.SMIMEException;
 import org.bouncycastle.operator.OperatorCreationException;
 
+import javax.activation.MimeTypeParseException;
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -23,7 +31,7 @@ import java.util.Enumeration;
  * more info on http://nyal.developpez.com/tutoriel/java/bouncycastle/
  */
 public class Main {
-    public static void main(String[] args) throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, CertificateException, InvalidAlgorithmParameterException, NoSuchProviderException, IOException, OperatorCreationException, SignatureException, CMSException, InvalidKeyException {
+    public static void main(String[] args) throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException, CertificateException, InvalidAlgorithmParameterException, NoSuchProviderException, IOException, OperatorCreationException, SignatureException, CMSException, InvalidKeyException, SMIMEException, MimeTypeParseException, MessagingException {
 
         //snippet 1 (load certificates from a P12 keystore)
         String password = "Wiiagdfsa";
@@ -49,8 +57,29 @@ public class Main {
 //        CMSSign.verify(envelopedData);
 
         //snippet 4 (encrypt/decrypt)
-        byte[] encrypted = Encrypt.encrypt("/home/kanishka/Desktop/testkeys/doc_to_sign");
-        Encrypt.decrypt(encrypted);
+//        byte[] encrypted = Encrypt.encrypt("/home/kanishka/Desktop/testkeys/doc_to_sign");
+//        Encrypt.decrypt(encrypted);
 
+        //sign
+        MimeMultipart mimeMultipart = MimeOps.signMime("/home/kanishka/Desktop/testkeys/doc_to_sign");
+        MimeMessage mimeMessage = MimeOps.createMimeMessage(mimeMultipart);
+
+        //validate
+        MimeOps.validate(mimeMessage);
+
+        //create mimebody part
+        MimeBodyPart mimeBodyPart = MimeOps.createMimebodyPart(mimeMultipart);
+        MimeBodyPart encryptedMime = MimeOps.encrypt(mimeBodyPart);
+
+        ByteArrayOutputStream byteArrayOutputStreamEncrypted = new ByteArrayOutputStream();
+        encryptedMime.writeTo(byteArrayOutputStreamEncrypted);
+        byte[] encryptedData = byteArrayOutputStreamEncrypted.toByteArray();
+
+        ByteArrayOutputStream byteArrayOutputStreamDecrypted = new ByteArrayOutputStream();
+        MimeBodyPart mimeBodyPartDecrypted = MimeOps.decrypt(encryptedMime);
+        mimeBodyPartDecrypted.writeTo(byteArrayOutputStreamDecrypted);
+        byte[] decryptedData = byteArrayOutputStreamDecrypted.toByteArray();
+
+        System.out.println("Done!");
     }
 }
